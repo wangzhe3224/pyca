@@ -1,4 +1,5 @@
 from typing import List
+import abc
 import copy
 from itertools import product
 from pyca.celltype import CellType
@@ -6,16 +7,31 @@ from pyca.celltype import CellType
 import numpy as np
 
 
-def reset_cell(cell: CellType):
-    return cell.reset()
+class UniverseType(abc.ABC):
+    """ A universe can do one thing: compute """
+
+    @abc.abstractmethod
+    def initialize(self, *args, **kwargs):
+        """"""
+
+    @abc.abstractmethod
+    def register_cell_type(self, *arg, **kwargs):
+        """"""
+
+    @abc.abstractmethod
+    def compute(self, *arg, **kwargs):
+        """"""
+
+    @abc.abstractmethod
+    def __getitem__(self, item):
+        """"""
+
+    @abc.abstractmethod
+    def __len__(self):
+        """"""
 
 
-def neighbour_d(h_level, v_level):
-    """ 1: [(-1, -1), (-1, 0), (-1, 1), (0, -1), (0, 0), (0, 1), (1, -1), (1, 0), (1, 1)]  """
-    return product(range(-h_level, h_level+1), range(-v_level, v_level+1))
-
-
-class Universe2D(object):
+class Universe2D(UniverseType):
     """"""
 
     def __init__(self, length: int, width: int):
@@ -27,8 +43,6 @@ class Universe2D(object):
         # time: list of grid
         # store cell representation
         self._steps = []  # type: List[np.array]
-        self._cur_step = 0
-        #
         self._initialized = False
         self._full_registered = False
         # Cache
@@ -43,7 +57,7 @@ class Universe2D(object):
         for row in range(rows):  # Speed up this nest loops
             for col in range(cols):
                 cell = self._cell_space[row][col]
-                _init_status[row][col] = cell.state
+                _init_status[row][col] = cell.status()
 
         self._steps.append(_init_status)
         self._initialized = True
@@ -77,8 +91,6 @@ class Universe2D(object):
             # print(_new_status)
             self._steps.append(_new_status)
 
-        return None
-
     def process(self, space) -> np.array:
         """ process one step
 
@@ -86,12 +98,12 @@ class Universe2D(object):
         """
         rows, cols = space.shape
         new_status = np.empty(space.shape)
+        cur_status = self._steps[-1].copy()  # slow here
 
         for row in range(rows):
             for col in range(cols):
                 cell = space[row][col]  # type: CellType
                 h_level, v_level = cell.neighbour_level()
-                cur_status = self._steps[-1]
                 neighbours, (r, c) = self.get_neighbours(cur_status, h_level, v_level, row, col)
                 state = cell.process(neighbours, (r, c))
                 new_status[row][col] = state
@@ -102,6 +114,15 @@ class Universe2D(object):
     def get_neighbours(snapshot: np.array, h_level, v_level, row, col) -> (np.array, (int, int)):
         """ get neighbours given h_level, v_level, and the location of the current cell in neighbours
         o is our target shell, return following slice of snapshot
+
+        # TODO: Add a generic way to express neighbour pattern (Moore neighborhood). For example, x is target. But For now
+        this can be handled by CellType.
+
+        0 1 0
+        1 x 1
+        0 1 0
+
+        Current it is always rectangular selection of neighbours:  von Neumann neighborhood
 
         x | x | x
         x | o | x

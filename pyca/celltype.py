@@ -1,11 +1,10 @@
 from abc import ABC, abstractmethod
-from typing import List
 
 import numpy as np
 
 
 class CellType(ABC):
-    """ A cell type """
+    """ A cell type can do one thing: process """
 
     @abstractmethod
     def neighbour_level(self) -> (int, int):
@@ -19,13 +18,12 @@ class CellType(ABC):
     def process(self, neighbours, cell_loc: (int, int)) -> float:
         """ process the cell given neighbours, return next status code as int """
 
-    @abstractmethod
     def reset(self) -> float:
         """ reset cell to its initial status, return the status code """
 
     def __call__(self, *args, **kwargs):
         """ for the sake of pycharm... """
-        self.__call__(*args, **kwargs)
+        return self
 
 
 class GameOfLife(CellType):
@@ -77,4 +75,3 @@ class GameOfLife(CellType):
     def reset(self) -> float:
         self.state = 0.
         return self.state
-

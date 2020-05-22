@@ -3,6 +3,7 @@ import unittest
 import numpy as np
 
 from pyca.universe2d import Universe2D
+from pyca.universe1d import Universe1D
 
 
 class TestUniverse(unittest.TestCase):
@@ -64,3 +65,40 @@ class TestUniverse(unittest.TestCase):
         assert r == 1
         assert c == 1
 
+    def test_universe_1d(self):
+        universe = Universe1D(10)
+
+        snap = np.array([0, 1, 2, 3, 4, 5])
+        nei, loc = universe.get_neighbours(snap, 1, 0)
+        print(nei)
+        assert np.array_equal(np.array([0, 1]), nei)
+        self.assertEqual(0, loc)
+
+        nei, loc = universe.get_neighbours(snap, 1, 1)
+        print(nei)
+        assert np.array_equal(np.array([0, 1, 2]), nei)
+        self.assertEqual(1, loc)
+
+        nei, loc = universe.get_neighbours(snap, 1, 3)
+        assert np.array_equal(np.array([2, 3, 4]), nei)
+        self.assertEqual(1, loc)
+
+        nei, loc = universe.get_neighbours(snap, 1, 5)
+        assert np.array_equal(np.array([4, 5]), nei)
+        self.assertEqual(1, loc)
+
+        nei, loc = universe.get_neighbours(snap, 1, 4)
+        assert np.array_equal(np.array([3, 4, 5]), nei)
+        print(nei)
+        self.assertEqual(1, loc)
+
+        nei, loc = universe.get_neighbours(snap, 2, 5)
+        assert np.array_equal(np.array([3, 4, 5]), nei)
+        self.assertEqual(2, loc)
+
+        nei, loc = universe.get_neighbours(np.array([1.,1.,0,1,0,0,0,0,0,0]), 1, 0)
+        assert np.array_equal(np.array([1, 1]), nei)
+        self.assertEqual(0, loc)
+        nei, loc = universe.get_neighbours(np.array([1.,1.,0,1,0,0,0,0,0,0]), 1, 1)
+        assert np.array_equal(np.array([1, 1, 0]), nei)
+        self.assertEqual(1, loc)
