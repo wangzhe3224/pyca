@@ -1,10 +1,66 @@
 from typing import List
 import abc
-import copy
-from itertools import product
 from pyca.celltype import CellType
+from numba import jit
 
 import numpy as np
+
+
+@jit(nopython=True)
+def get_neighbours(snapshot: np.array, h_level, v_level, row, col) -> (np.array, (int, int)):
+    """ get neighbours given h_level, v_level, and the location of the current cell in neighbours
+    o is our target shell, return following slice of snapshot
+
+    # TODO: Add a generic way to express neighbour pattern (Moore neighborhood). For example, x is target. But For now
+    this can be handled by CellType.
+
+    0 1 0
+    1 x 1
+    0 1 0
+
+    Current it is always rectangular selection of neighbours:  von Neumann neighborhood
+
+    x | x | x
+    x | o | x
+    x | x | x
+
+    Corner cases:
+    | o | x
+    | x | x
+
+    | x | x
+    | o | x
+    | x | x
+    """
+    row_l, col_l = snapshot.shape
+    # fill neighbour
+    res = snapshot[max(0, row - h_level): min(row_l, row + h_level + 1),
+          max(0, col - v_level): min(col_l, col + v_level + 1)]
+
+    # find row
+    if row - h_level < 0:  # up row edge
+        loc_r = max(row, row - h_level)
+    else:  # normal cases
+        loc_r = h_level
+
+    # find col
+    if col - v_level < 0:
+        loc_c = max(col, col - v_level)
+    else:
+        loc_c = v_level
+
+    return res, (loc_r, loc_c)
+
+
+@jit(nopython=True)
+def _process(cols, cur_status, new_status, rows, space):
+    for row in range(rows):
+        for col in range(cols):
+            cell = space[row][col]  # type: CellType
+            h_level, v_level = cell.neighbour_level()
+            neighbours, (r, c) = get_neighbours(cur_status, h_level, v_level, row, col)
+            state = cell.process(neighbours, (r, c))
+            new_status[row][col] = state
 
 
 class UniverseType(abc.ABC):
@@ -100,15 +156,20 @@ class Universe2D(UniverseType):
         new_status = np.empty(space.shape)
         cur_status = self._steps[-1].copy()  # slow here
 
+        _process(cols, cur_status, new_status, rows, space)
+
+        return new_status
+
+    @staticmethod
+    @jit(nopython=True)
+    def _process(cols, cur_status, new_status, rows, space):
         for row in range(rows):
             for col in range(cols):
                 cell = space[row][col]  # type: CellType
                 h_level, v_level = cell.neighbour_level()
-                neighbours, (r, c) = self.get_neighbours(cur_status, h_level, v_level, row, col)
+                neighbours, (r, c) = get_neighbours(cur_status, h_level, v_level, row, col)
                 state = cell.process(neighbours, (r, c))
                 new_status[row][col] = state
-
-        return new_status
 
     @staticmethod
     def get_neighbours(snapshot: np.array, h_level, v_level, row, col) -> (np.array, (int, int)):

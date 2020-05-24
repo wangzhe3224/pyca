@@ -117,7 +117,6 @@ class Universe1D(UniverseType):
             cell = snapshot[i]  # type: CellType
             level, _ = cell.neighbour_level()
             neighbours, loc = self.get_neighbours(cur_status, level, i)
-            # print(cur_status, level, i, neighbours, loc)
             state = cell.process(neighbours, (loc, None))
             new_status[i] = state
 
