@@ -141,3 +141,14 @@ class Universe1D(UniverseType):
 
     def form_matrix(self):
         return np.stack(self._steps)
+
+    def form_step_matrix(self):
+        """"""
+        shape = (len(self._steps), len(self._steps[0]))
+        res = []
+        _tmp = np.zeros(shape)
+        for idx, step in enumerate(self._steps):
+            _tmp[idx, :] = step
+            res.append(_tmp.copy())
+
+        return res

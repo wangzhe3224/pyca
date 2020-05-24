@@ -95,6 +95,8 @@ https://en.wikipedia.org/wiki/Rule_110
 
 [Code](./example/rule110.py)
 
+![Rule 110 ani](./assets/rule110_animtion.gif)
+
 ![Rule 110](./assets/rule110.png)
 
 ### Switch rules
