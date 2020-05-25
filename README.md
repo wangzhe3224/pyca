@@ -1,4 +1,5 @@
-# pyca
+![logo](./assets/logo_small.png) 
+# pyca 
 
 [![Build Status](https://travis-ci.com/wangzhe3224/pyca.svg?branch=master)](https://travis-ci.com/wangzhe3224/pyca)
 
