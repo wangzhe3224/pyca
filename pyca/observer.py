@@ -56,11 +56,12 @@ def plot2d_universe(universe: Universe2D, step=-1, title=''):
     plt.show()
 
 
-def plot1d_universe(universe: Universe1D, title='', write_to=''):
+def plot1d_universe(universe: Universe1D, title='', write_to='', is_show=True):
     cmap = plt.get_cmap('Greys')
-    fig = plt.figure()
     plt.title(title)
     im = plt.imshow(universe.form_matrix(), animated=True, cmap=cmap)
-    plt.show()
+    if is_show:
+        plt.show()
     if write_to:
         plt.savefig(write_to)
+    plt.close()
