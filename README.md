@@ -66,6 +66,10 @@ new type of CellType.
 
 ## Examples:
 
+### Rule 0 - Rule 255
+
+[pngs](./assets/255/)
+
 ### 2D Cyclic AC
 
 http://psoup.math.wisc.edu/mcell/rullex_cycl.html
