@@ -14,6 +14,10 @@ Cellular Automata, CA, in Python.
 - support customized neighbour search 
 - unit tests (more is coming)
 
+## Install
+
+`pip install pycax`
+
 ## Get started
 ### See something running
 1. Clone the code
