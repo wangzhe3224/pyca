@@ -5,6 +5,8 @@
 
 Cellular Automata, CA, in Python.
 
+![2D Cyclic AC](./assets/2d_cyclic_ac.gif)
+
 ## Features
 
 - easy to add new rules, check Rule30
