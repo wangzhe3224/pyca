@@ -1,0 +1,17 @@
+[tool.poetry]
+name = "pyca"
+version = "1.0.0"
+description = ""
+authors = ["Funcoder <wangzhetju@gmail.com>"]
+readme = "README.md"
+packages = [{include = "pyca"}]
+
+[tool.poetry.dependencies]
+python = "^3.7"
+numpy = "*"
+matplotlib = "*"
+
+
+[build-system]
+requires = ["poetry-core"]
+build-backend = "poetry.core.masonry.api"
