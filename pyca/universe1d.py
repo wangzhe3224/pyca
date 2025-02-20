@@ -36,7 +36,7 @@ class Universe1D(UniverseType):
         if not self._full_registered:
             raise ValueError('Universe is not fully filled by cells! Use register_cell_type')
 
-        _init_status = np.empty((self.size, ), dtype=np.float)
+        _init_status = np.empty((self.size, ), dtype=float)
         for item in range(self.size):
             cell = self._cell_space[item]  # type: CellType
             _init_status[item] = cell.status()
@@ -66,7 +66,7 @@ class Universe1D(UniverseType):
             for idx, i in enumerate(pattern):
                 self._cell_space[idx] = cell(state=i, **kwargs)
         elif fill_strategy == 'random':
-            prob = kwargs.get('prob', 0.5)
+            prob = kwargs.pop('prob', 0.5)
             for i in range(self.size):
                 state = np.random.choice([0, 1], p=[1-prob, prob])
                 self._cell_space[i] = cell(state=state, **kwargs)
